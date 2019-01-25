@@ -1,5 +1,6 @@
 var expect = require('expect.js'),
-    htmlparser2 = require('htmlparser2'),
+    Parser = require('htmlparser2/lib/Parser'),
+    DomHandler = require('domhandler'),
     $ = require('../'),
     fixtures = require('./fixtures'),
     fruits = fixtures.fruits,
@@ -7,6 +8,12 @@ var expect = require('expect.js'),
     _ = {
       filter: require('lodash/filter')
     };
+
+function parseDOM(data, options) {
+  var handler = new DomHandler(options);
+  new Parser(handler, options).end(data);
+  return handler.dom;
+}
 
 // HTML
 var script = '<script src="script.js" type="text/javascript"></script>',
@@ -349,7 +356,7 @@ describe('cheerio', function() {
     });
 
     it('should allow loading a pre-parsed DOM', function() {
-      var dom = htmlparser2.parseDOM(food),
+      var dom = parseDOM(food),
           q = $.load(dom);
 
       expect(q('ul')).to.have.length(3);
